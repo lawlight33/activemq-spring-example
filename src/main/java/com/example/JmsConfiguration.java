@@ -1,6 +1,6 @@
 package com.example;
 
-import com.example.services.Consumer;
+import com.example.services.ConsumerGroup;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;
 import org.slf4j.Logger;
@@ -17,11 +17,11 @@ import javax.jms.ConnectionFactory;
 @Configuration
 public class JmsConfiguration {
 
-    private static final Logger logger = LoggerFactory.getLogger(Consumer.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConsumerGroup.class);
 
     public static final String BROKER_URL = "tcp://localhost:61616";
 
-    public static final String QUEUE_NAME = "test_spring_queue";
+    public static final String DESTINATION_NAME = "spring_activemq_test";
 
     @Bean
     public MessageConverter messageConverter() {
@@ -55,6 +55,8 @@ public class JmsConfiguration {
         // Other acknowledge modes can be set via: factory.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
         factory.setErrorHandler(ex -> logger.error("JMS exception occurred!!!", ex));
         factory.setMessageConverter(messageConverter);
+        // Set "true" for Topic instead of Queue
+        factory.setPubSubDomain(false);
         return factory;
     }
 }

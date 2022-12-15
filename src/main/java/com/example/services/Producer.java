@@ -27,7 +27,10 @@ public class Producer {
 
     public void sendMessage(Order order) {
         JmsTemplate jmsTemplate = jmsTemplate();
-        Destination destination = new ActiveMQQueue(JmsConfiguration.QUEUE_NAME);
+        // Use new ActiveMQTopic() for Topic instead of Queue
+        // Also call factory.setPubSubDomain(true) instead of factory.setPubSubDomain(false)
+        // for DefaultJmsListenerContainerFactory in JmsConfiguration
+        Destination destination = new ActiveMQQueue(JmsConfiguration.DESTINATION_NAME);
         jmsTemplate.convertAndSend(destination, order);
         logger.info("[Producer] Message was sent");
     }
