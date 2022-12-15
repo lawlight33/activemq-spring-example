@@ -10,6 +10,7 @@ import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.stereotype.Component;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.DeliveryMode;
 
 @Component
 public class Producer {
@@ -23,10 +24,21 @@ public class Producer {
     MessageConverter messageConverter;
 
     public void sendMessage(Order order) {
-        // You can create a bean of type JmsTemplate
-        JmsTemplate jmsTemplate = new JmsTemplate(activeMqConnectionFactory);
-        jmsTemplate.setMessageConverter(messageConverter);
+        JmsTemplate jmsTemplate = jmsTemplate();
         jmsTemplate.convertAndSend(JmsConfiguration.QUEUE_NAME, order);
         logger.info("[Producer] Message was sent");
+    }
+
+    // You can create a bean of JmsTemplate type
+    private JmsTemplate jmsTemplate() {
+        JmsTemplate jmsTemplate = new JmsTemplate(activeMqConnectionFactory);
+        jmsTemplate.setMessageConverter(messageConverter);
+        // Turn on ability to specify deliveryMode, priority, and timeToLive in JmsTemplate object
+        jmsTemplate.setExplicitQosEnabled(true);
+        logger.info("[Producer] JmsTemplate explicit QOS is set to: {}", jmsTemplate.isExplicitQosEnabled());
+        // Specify deliveryMode
+        // Another way: jmsTemplate.setDeliveryPersistent(false);
+        jmsTemplate.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+        return jmsTemplate;
     }
 }

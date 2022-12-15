@@ -26,7 +26,7 @@ public class JmsConfiguration {
 
     @Bean
     public ConnectionFactory connectionFactory() {
-        ActiveMQConnectionFactory activeMQConnectionFactory  = new ActiveMQConnectionFactory();
+        ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
         activeMQConnectionFactory.setBrokerURL(BROKER_URL);
         return activeMQConnectionFactory;
     }
