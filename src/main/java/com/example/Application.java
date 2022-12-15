@@ -2,27 +2,18 @@ package com.example;
 
 import com.example.model.Order;
 import com.example.services.Producer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import javax.annotation.PostConstruct;
+import org.springframework.context.ApplicationContext;
 
 @SpringBootApplication
 public class Application {
 
-	@Autowired
-	private Producer producer;
-
-	@PostConstruct
-	public void run() {
-		Order order = new Order();
-		order.setId(42);
-		producer.sendMessage(order);
-	}
-
 	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+		ApplicationContext applicationContext = SpringApplication.run(Application.class, args);
 
+		// Send message
+		Producer producer = applicationContext.getBean(Producer.class);
+		producer.sendMessage(new Order(42));
+	}
 }

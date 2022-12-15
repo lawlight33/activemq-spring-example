@@ -2,6 +2,7 @@ package com.example.services;
 
 import com.example.JmsConfiguration;
 import com.example.model.Order;
+import org.apache.activemq.command.ActiveMQQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.DeliveryMode;
+import javax.jms.Destination;
 
 @Component
 public class Producer {
@@ -25,7 +27,8 @@ public class Producer {
 
     public void sendMessage(Order order) {
         JmsTemplate jmsTemplate = jmsTemplate();
-        jmsTemplate.convertAndSend(JmsConfiguration.QUEUE_NAME, order);
+        Destination destination = new ActiveMQQueue(JmsConfiguration.QUEUE_NAME);
+        jmsTemplate.convertAndSend(destination, order);
         logger.info("[Producer] Message was sent");
     }
 
