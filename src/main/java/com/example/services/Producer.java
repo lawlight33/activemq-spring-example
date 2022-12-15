@@ -3,6 +3,7 @@ package com.example.services;
 import com.example.JmsConfiguration;
 import com.example.model.Order;
 import org.apache.activemq.command.ActiveMQQueue;
+import org.apache.activemq.command.ActiveMQTopic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,18 @@ public class Producer {
 
     public void sendMessage(Order order) {
         JmsTemplate jmsTemplate = jmsTemplate();
-        // Use new ActiveMQTopic() for Topic instead of Queue
-        // Also call factory.setPubSubDomain(true) instead of factory.setPubSubDomain(false)
-        // for DefaultJmsListenerContainerFactory in JmsConfiguration
-        Destination destination = new ActiveMQQueue(JmsConfiguration.DESTINATION_NAME);
+        Destination destination;
+        switch (JmsConfiguration.DESTINATION_TYPE) {
+            case QUEUE:
+                destination = new ActiveMQQueue(JmsConfiguration.DESTINATION_NAME);
+                break;
+            case TOPIC:
+            case DURABLE_CONSUMERS_TOPIC:
+                destination = new ActiveMQTopic(JmsConfiguration.DESTINATION_NAME);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown destination type " + JmsConfiguration.DESTINATION_TYPE);
+        }
         jmsTemplate.convertAndSend(destination, order);
         logger.info("[Producer] Message was sent");
     }
